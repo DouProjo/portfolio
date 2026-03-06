@@ -14,6 +14,7 @@ permalink: /gamify/MyGame
     import Core from "{{site.baseurl}}/assets/js/GameEnginev1/essentials/Game.js";
     import GameControl from "{{site.baseurl}}/assets/js/GameEnginev1/essentials/GameControl.js";
     import GameLevelSkyMaze from "{{site.baseurl}}/assets/js/GameEnginev1/GameLevelSkyMaze.js";
+    import GameLevelEnd from "{{site.baseurl}}/assets/js/GameEnginev1/GameLevelEnd.js";
     import { pythonURI, javaURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
 
     const gameLevelClasses = [GameLevelSkyMaze];
