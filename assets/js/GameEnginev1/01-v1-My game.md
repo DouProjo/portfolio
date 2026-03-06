@@ -1,6 +1,6 @@
 ---
 layout: opencs
-title: RPG My Game
+title: RPG my game
 permalink: /gamify/MyGame
 ---
 
@@ -11,10 +11,10 @@ permalink: /gamify/MyGame
 
 <script type="module">
     // Adnventure Game assets locations
-    import Core from "{{site.baseurl}}./essentials/Game.js";
-    import GameControl from "{{site.baseurl}}./essentials/GameControl.js";
-    import GameLevelSkyMaze from "{{site.baseurl}}./GameLevelSkyMaze.js";
-    import { pythonURI, javaURI, fetchOptions } from '{{site.baseurl}}./assets/js/api/config.js';
+    import Core from "{{site.baseurl}}/assets/js/GameEnginev1/essentials/Game.js";
+    import GameControl from "{{site.baseurl}}/assets/js/GameEnginev1/essentials/GameControl.js";
+    import GameLevelSkyMaze from "{{site.baseurl}}/assets/js/GameEnginev1/GameLevelSkyMaze.js";
+    import { pythonURI, javaURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
 
     const gameLevelClasses = [GameLevelSkyMaze];
 
