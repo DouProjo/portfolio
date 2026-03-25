@@ -17,6 +17,10 @@ layout: post
 title: Sprint 1 - Verify Tools
 description: Verifying Tools and Software for Sprint 1
 type: collab
+<<<<<<< HEAD
+=======
+courses: {'csa': {'week': 3}}
+>>>>>>> upstream/main
 comments: True
 categories: ['Collaboration']
 ---

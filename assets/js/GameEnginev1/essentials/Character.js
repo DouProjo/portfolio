@@ -162,12 +162,15 @@ class Character extends GameObject {
      * 
      */
     update() {
+<<<<<<< HEAD
         // If the game is paused, draw the current state but skip updates and movement
         if (this.gameEnv && this.gameEnv.gameControl && this.gameEnv.gameControl.isPaused) {
             this.draw();
             return;
         }
 
+=======
+>>>>>>> upstream/main
         this.draw();
         this.collisionChecks();
         this.move();
@@ -248,9 +251,12 @@ class Character extends GameObject {
      * Updates the frame index for animation at a slower rate.
      */
     updateAnimationFrame() {
+<<<<<<< HEAD
         // Skip advancing animation frames while paused
         if (this.gameEnv && this.gameEnv.gameControl && this.gameEnv.gameControl.isPaused) return;
 
+=======
+>>>>>>> upstream/main
         this.frameCounter++;
         if (this.frameCounter % this.animationRate === 0) {
             const directionData = this.spriteData[this.direction] || {};
@@ -329,9 +335,12 @@ class Character extends GameObject {
      */
     move(x, y) {
 
+<<<<<<< HEAD
         // Do not change position while paused
         if (this.gameEnv && this.gameEnv.gameControl && this.gameEnv.gameControl.isPaused) return;
 
+=======
+>>>>>>> upstream/main
         if(x != undefined){
             this.position.x = x;
         }
@@ -432,4 +441,8 @@ class Character extends GameObject {
     
 }
 
+<<<<<<< HEAD
 export default Character;
+=======
+export default Character;
+>>>>>>> upstream/main

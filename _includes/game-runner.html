@@ -1,5 +1,10 @@
 <!-- Reusable Game Runner Component -->
+<<<<<<< HEAD
 <div class="game-runner-container" id="game-runner-{{ include.runner_id }}" data-storage-key="{{ page.permalink | replace: '/', '_' }}_{{ include.runner_id }}">
+=======
+<div class="game-runner-container{% if include.hide_edit == 'true' %} hide-editor{% endif %}" id="game-runner-{{ include.runner_id }}" data-storage-key="{{ page.permalink | replace: '/', '_' }}_{{ include.runner_id }}">
+  {% if include.hide_edit != 'true' %}
+>>>>>>> upstream/main
   <div class="challenge-box">
     <h3>Challenge</h3>
     <p>{{ include.challenge }}</p>
@@ -8,8 +13,17 @@
   <div class="editor-container">
     <div class="control-panel">
       <button class="runBtn" title="Start Game">▶ Start</button>
+<<<<<<< HEAD
       <button class="stopBtn" title="Stop Game">■ Stop</button>
       <button class="resetBtn" title="Reset Game">↻ Reset</button>
+=======
+      <button class="pauseBtn" title="Pause Game">⏸ Pause</button>
+      <button class="stopBtn" title="Stop Game">■ Stop</button>
+      <select class="engineVersionSelect" title="Select Game Engine Version">
+        <option value="GameEnginev1">Engine v1</option>
+        <option value="GameEnginev1.1" selected>Engine v1.1</option>
+      </select>
+>>>>>>> upstream/main
       <select class="levelSelect" title="Select Level">
         <option value="">Select Level...</option>
       </select>
@@ -23,6 +37,24 @@
       <button class="clearStorageBtn" title="Clear Storage">🗑️ Clear</button>
     </div>
   </div>
+<<<<<<< HEAD
+=======
+  {% else %}
+  <!-- Compact controls for hide_edit mode -->
+  <div class="compact-controls">
+    <button class="runBtn" title="Start Game">▶ Play</button>
+    <button class="pauseBtn" title="Pause Game">⏸ Pause</button>
+    <button class="stopBtn" title="Stop Game">■ Stop</button>
+    <select class="engineVersionSelect" title="Select Game Engine Version">
+      <option value="GameEnginev1">Engine v1</option>
+      <option value="GameEnginev1.1" selected>Engine v1.1</option>
+    </select>
+    <select class="levelSelect" title="Select Level">
+      <option value="">Select Level...</option>
+    </select>
+  </div>
+  {% endif %}
+>>>>>>> upstream/main
 
   <div class="output-container">
     <div class="control-panel">
@@ -41,6 +73,10 @@
   const container = document.getElementById('game-runner-{{ include.runner_id }}');
   if (!container) return;
   
+<<<<<<< HEAD
+=======
+  const hideEdit = {{ include.hide_edit | default: 'false' }};
+>>>>>>> upstream/main
   const defaultCode = `{{ include.code }}`.trim();
   const editorHeight = "{{ include.height }}";
   const levelClasses = `{{ include.levels }}`.trim().split(',').map(s => s.trim()).filter(Boolean);
@@ -50,6 +86,7 @@
   const savedCode = localStorage.getItem(storageKey);
   const initialCode = savedCode !== null ? savedCode : defaultCode;
   
+<<<<<<< HEAD
   // Set CodeMirror height dynamically
   const style = document.createElement('style');
   if (editorHeight && editorHeight !== "") {
@@ -72,6 +109,36 @@
   const runBtn = container.querySelector('.runBtn');
   const stopBtn = container.querySelector('.stopBtn');
   const resetBtn = container.querySelector('.resetBtn');
+=======
+  let editor = null;
+  
+  // Initialize CodeMirror only if not in hide_edit mode
+  if (!hideEdit) {
+    // Set CodeMirror height dynamically
+    const style = document.createElement('style');
+    if (editorHeight && editorHeight !== "") {
+      style.textContent = `#game-runner-{{ include.runner_id }} .CodeMirror { height: ${editorHeight}; }`;
+    } else {
+      style.textContent = `#game-runner-{{ include.runner_id }} .CodeMirror { height: 300px; }`;
+    }
+    document.head.appendChild(style);
+
+    // Initialize CodeMirror
+    editor = CodeMirror.fromTextArea(container.querySelector('.editor-textarea'), {
+      mode: 'javascript',
+      theme: 'darcula',
+      lineNumbers: true,
+      value: initialCode
+    });
+    editor.setValue(initialCode);
+  }
+
+  // Get UI elements
+  const runBtn = container.querySelector('.runBtn');
+  const pauseBtn = container.querySelector('.pauseBtn');
+  const stopBtn = container.querySelector('.stopBtn');
+  const engineVersionSelect = container.querySelector('.engineVersionSelect');
+>>>>>>> upstream/main
   const levelSelect = container.querySelector('.levelSelect');
   const gameOutput = container.querySelector('.game-output');
   const statusText = container.querySelector('.status-text');
@@ -79,6 +146,7 @@
   const charCountSpan = container.querySelector('.charCount');
 
   // Game state
+<<<<<<< HEAD
   let gameControl = null;
   let gameInstance = null;
   let currentLevelIndex = 0;
@@ -147,12 +215,109 @@
       try {
         if (gameControl.destroy) {
           gameControl.destroy();
+=======
+  let gameCore = null;  // Return value from Game.main()
+  let gameControl = null;  // The actual GameControl instance with pause/resume
+  let currentLevelIndex = 0;
+  let gameStateMonitor = null;  // Interval to monitor game state
+
+  // Disable game controls initially
+  pauseBtn.disabled = true;
+  stopBtn.disabled = true;
+
+  // Update stats (only if editor exists)
+  function updateStats() {
+    if (!editor || hideEdit) return;
+    const code = editor.getValue();
+    const lines = code.split('\n').length;
+    const chars = code.length;
+    if (lineCountSpan) lineCountSpan.textContent = `Lines: ${lines}`;
+    if (charCountSpan) charCountSpan.textContent = `Characters: ${chars}`;
+  }
+  
+  if (editor) {
+    editor.on('change', updateStats);
+    updateStats();
+  }
+
+  // Update status
+  function updateStatus(status) {
+    if (statusText) statusText.textContent = status;
+  }
+
+  // Clear storage button - removes localStorage and resets to default code
+  const clearStorageBtn = container.querySelector('.clearStorageBtn');
+  if (clearStorageBtn) {
+    clearStorageBtn.onclick = () => {
+      localStorage.removeItem(storageKey);
+      if (editor) editor.setValue(defaultCode || "");
+      if (gameOutput) gameOutput.textContent = 'Storage cleared. Code reset to default.';
+      updateStatus('Reset');
+      const originalText = clearStorageBtn.textContent;
+      clearStorageBtn.textContent = '✔';
+      setTimeout(() => {
+        clearStorageBtn.textContent = originalText;
+      }, 2000);
+    };
+  }
+
+  // Save code button - saves to localStorage
+  const saveBtn = container.querySelector('.saveBtn');
+  if (saveBtn) {
+    saveBtn.onclick = () => {
+      if (editor) {
+        const code = editor.getValue();
+        localStorage.setItem(storageKey, code);
+      }
+      const originalText = saveBtn.innerHTML;
+      saveBtn.innerHTML = '✔ Saved';
+      setTimeout(() => {
+        saveBtn.innerHTML = originalText;
+      }, 2000);
+    };
+  }
+
+  // Copy code button
+  const copyBtn = container.querySelector('.copyBtn');
+  if (copyBtn) {
+    copyBtn.onclick = () => {
+      if (editor) {
+        const code = editor.getValue();
+        navigator.clipboard.writeText(code).then(() => {
+          const originalText = copyBtn.innerHTML;
+          copyBtn.innerHTML = '✔ Copied';
+          setTimeout(() => {
+            copyBtn.innerHTML = originalText;
+          }, 2000);
+        });
+      }
+    };
+  }
+
+  // Stop game
+  function stopGame() {
+    if (gameCore) {
+      try {
+        if (gameCore.destroy) {
+          gameCore.destroy();
+>>>>>>> upstream/main
         }
       } catch (e) {
         console.warn('Error destroying game:', e);
       }
+<<<<<<< HEAD
       gameControl = null;
       gameInstance = null;
+=======
+      gameCore = null;
+      gameControl = null;
+    }
+    
+    // Stop monitoring game state
+    if (gameStateMonitor) {
+      clearInterval(gameStateMonitor);
+      gameStateMonitor = null;
+>>>>>>> upstream/main
     }
     
     // Get the game container and clear all remaining canvases
@@ -165,6 +330,7 @@
     
     updateStatus('Stopped');
     runBtn.disabled = false;
+<<<<<<< HEAD
     stopBtn.disabled = true;
     levelSelect.disabled = false;
     
@@ -198,12 +364,50 @@
     updateStatus('Reset');
   }
 
+=======
+    pauseBtn.disabled = true;
+    stopBtn.disabled = true;
+    levelSelect.disabled = false;
+  }
+
+  // Toggle pause/resume
+  function togglePause() {
+    if (!gameControl) return;
+    
+    // Check actual game state
+    const currentlyPaused = gameControl.isPaused;
+    
+    if (currentlyPaused) {
+      // Resume - use pauseFeature if available, otherwise call resume directly
+      if (gameControl.pauseFeature && typeof gameControl.pauseFeature.hide === 'function') {
+        gameControl.pauseFeature.hide(); // This will call resume() internally and hide overlay
+      } else if (gameControl.resume) {
+        gameControl.resume();
+      }
+      updateStatus('Running');
+    } else {
+      // Pause - use pauseFeature to show menu if available, otherwise call pause directly
+      if (gameControl.pauseFeature && typeof gameControl.pauseFeature.show === 'function') {
+        gameControl.pauseFeature.show(); // This will call pause() internally and show menu overlay
+      } else if (gameControl.pause) {
+        gameControl.pause();
+      }
+      updateStatus('Paused');
+    }
+  }
+
+>>>>>>> upstream/main
   // Run game
   async function runGame() {
     try {
       stopGame(); // Stop any existing game
       
+<<<<<<< HEAD
       let code = editor.getValue();
+=======
+      // Get code from editor or use default code (for hide_edit mode)
+      let code = editor ? editor.getValue() : defaultCode;
+>>>>>>> upstream/main
       if (!code.trim()) {
         updateStatus('Error: No code to run');
         return;
@@ -211,6 +415,7 @@
 
       updateStatus('Loading...');
       runBtn.disabled = true;
+<<<<<<< HEAD
       stopBtn.disabled = false;
       levelSelect.disabled = true;
 
@@ -229,6 +434,14 @@
       };
       document.addEventListener('keydown', escapeKeyHandler);
 
+=======
+      pauseBtn.disabled = false;
+      pauseBtn.textContent = '⏸ Pause';
+      pauseBtn.title = 'Pause Game';
+      stopBtn.disabled = false;
+      levelSelect.disabled = true;
+
+>>>>>>> upstream/main
       // Get container (GameEnv will use this reference directly)
       const gameContainer = document.getElementById('game-container-{{ include.runner_id }}');
       
@@ -236,6 +449,15 @@
       const path = '{{ site.baseurl }}';
       const baseUrl = window.location.origin + path;
       
+<<<<<<< HEAD
+=======
+      // Get selected engine version
+      const selectedVersion = engineVersionSelect ? engineVersionSelect.value : 'GameEnginev1';
+      
+      // Replace engine version in import paths (GameEnginev1 -> selected version)
+      code = code.replace(/GameEnginev1(?:\.1)?/g, selectedVersion);
+      
+>>>>>>> upstream/main
       // Replace relative import paths with absolute URLs
       // Match import statements and convert paths starting with / or relative paths to absolute URLs
       code = code.replace(/from\s+['"](\/?[^'"]+)['"]/g, (match, importPath) => {
@@ -248,8 +470,13 @@
         return match; // Already absolute
       });
       
+<<<<<<< HEAD
       // Import core Game engine
       const GameModule = await import(baseUrl + '/assets/js/GameEnginev1/essentials/Game.js');
+=======
+      // Import core Game engine (using selected version)
+      const GameModule = await import(baseUrl + '/assets/js/' + selectedVersion + '/essentials/Game.js');
+>>>>>>> upstream/main
       const Game = GameModule.default;
       
       // Create a blob URL to execute user code as a module
@@ -279,7 +506,12 @@
           gameLevelClasses: gameLevelClasses,
           innerWidth: containerWidth,   // Override window.innerWidth
           innerHeight: containerHeight,  // Override window.innerHeight
+<<<<<<< HEAD
           disablePauseMenu: true  // Disable pause menu in game runner
+=======
+          disablePauseMenu: true,  // Disable pause menu in game runner
+          disableContainerAdjustment: true  // Disable 40px offset for embedded context
+>>>>>>> upstream/main
         };
 
         // Populate level selector
@@ -296,10 +528,26 @@
         }
 
         // Start the game
+<<<<<<< HEAD
         gameInstance = Game.main(environment, GameControl);
         gameControl = gameInstance; // Store reference for pause/stop
         
         updateStatus('Running (Press Esc to Pause)');
+=======
+        gameCore = Game.main(environment, GameControl);
+        gameControl = gameCore.gameControl; // Get the actual GameControl instance
+        
+        updateStatus('Running');
+        
+        // Monitor game state to keep UI in sync (e.g., when PauseMenu's Resume button is clicked)
+        gameStateMonitor = setInterval(() => {
+          if (gameControl && gameControl.isPaused) {
+            updateStatus('Paused');
+          } else if (gameControl) {
+            updateStatus('Running');
+          }
+        }, 200);
+>>>>>>> upstream/main
         
       } finally {
         // Clean up blob URL
@@ -310,6 +558,7 @@
       updateStatus('Error: ' + error.message);
       console.error('Game error:', error);
       runBtn.disabled = false;
+<<<<<<< HEAD
       stopBtn.disabled = true;
       levelSelect.disabled = false;
       
@@ -317,14 +566,31 @@
       if (escapeKeyHandler) {
         document.removeEventListener('keydown', escapeKeyHandler);
         escapeKeyHandler = null;
+=======
+      pauseBtn.disabled = true;
+      stopBtn.disabled = true;
+      levelSelect.disabled = false;
+      
+      // Stop monitoring if error occurs
+      if (gameStateMonitor) {
+        clearInterval(gameStateMonitor);
+        gameStateMonitor = null;
+>>>>>>> upstream/main
       }
     }
   }
 
   // Event listeners
   runBtn.onclick = runGame;
+<<<<<<< HEAD
   stopBtn.onclick = stopGame;
   resetBtn.onclick = resetGame;
+=======
+  if (pauseBtn) {
+    pauseBtn.onclick = togglePause;
+  }
+  stopBtn.onclick = stopGame;
+>>>>>>> upstream/main
 
   // Level selector
   levelSelect.addEventListener('change', () => {
@@ -338,11 +604,21 @@
     }
   });
 
+<<<<<<< HEAD
   // Keyboard shortcuts
   editor.setOption("extraKeys", {
     "Ctrl-Enter": runGame,
     "Cmd-Enter": runGame
   });
+=======
+  // Keyboard shortcuts (only if editor exists)
+  if (editor) {
+    editor.setOption("extraKeys", {
+      "Ctrl-Enter": runGame,
+      "Cmd-Enter": runGame
+    });
+  }
+>>>>>>> upstream/main
 
 })();
 </script>

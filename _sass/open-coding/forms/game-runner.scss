@@ -12,8 +12,11 @@
   // Game output area - contained canvas for educational use
   .game-output {
     // Layout & Dimensions
+<<<<<<< HEAD
     min-height: 400px;
     max-height: 600px;
+=======
+>>>>>>> upstream/main
     overflow: hidden;
     position: relative;
     
@@ -30,10 +33,17 @@
       height: 580px;
       position: relative;
       overflow: hidden;
+<<<<<<< HEAD
+=======
+      display: flex;
+      align-items: center;
+      justify-content: center;
+>>>>>>> upstream/main
       
       // Only style the main canvas, not character canvases
       > canvas#gameCanvas {
         display: block;
+<<<<<<< HEAD
         width: 100% !important;
         height: 580px !important;
         border: none;
@@ -41,6 +51,10 @@
         position: absolute;
         top: 0;
         left: 0;
+=======
+        border: none;
+        background: transparent;
+>>>>>>> upstream/main
       }
       
       // Reset styles for all game-generated canvases
@@ -60,13 +74,18 @@
     min-width: 120px;
   }
 
+<<<<<<< HEAD
   // Game-specific buttons
+=======
+  // Game-specific buttons - using element classes for semantic colors
+>>>>>>> upstream/main
   .pauseBtn,
   .stopBtn,
   .resetBtn {
     @include icon-button(38px, 0);
   }
 
+<<<<<<< HEAD
   // Pause button - yellow emphasis for attention
   .pauseBtn {
     background: #eab308;
@@ -82,11 +101,22 @@
       background: var(--pref-bg-color);
       border-color: var(--ui-border);
       color: var(--pref-text-color);
+=======
+  // Pause button - warning color (yellow) for attention
+  .pauseBtn {
+    @extend .warning-button;
+
+    &:disabled {
+      background: var(--pref-bg-color) !important;
+      border-color: var(--ui-border) !important;
+      color: var(--pref-text-color) !important;
+>>>>>>> upstream/main
       opacity: 0.5;
       cursor: not-allowed;
     }
   }
 
+<<<<<<< HEAD
   // Stop button - red emphasis
   .stopBtn {
     background: #dc2626;
@@ -102,6 +132,16 @@
       background: var(--pref-bg-color);
       border-color: var(--ui-border);
       color: var(--pref-text-color);
+=======
+  // Stop button - danger color (red) for critical action
+  .stopBtn {
+    @extend .danger-button;
+
+    &:disabled {
+      background: var(--pref-bg-color) !important;
+      border-color: var(--ui-border) !important;
+      color: var(--pref-text-color) !important;
+>>>>>>> upstream/main
       opacity: 0.5;
       cursor: not-allowed;
     }
@@ -116,4 +156,46 @@
       font-weight: 600;
     }
   }
+<<<<<<< HEAD
+=======
+
+  // Compact controls for hide_edit mode (mini-game experiences)
+  .compact-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 12px;
+    background: var(--pref-bg-color);
+    border: 1px solid var(--ui-border);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    
+    .runBtn,
+    .stopBtn,
+    .resetBtn {
+      @include icon-button(38px, 0);
+    }
+    
+    .levelSelect {
+      @include select-control();
+      min-width: 120px;
+      flex: 1;
+      max-width: 200px;
+    }
+  }
+
+  // Hide-editor mode - cleaner experience for mini-games
+  &.hide-editor {
+    // Remove challenge box
+    .challenge-box {
+      display: none;
+    }
+    
+    // Make game output more prominent
+    .game-output {
+      border-radius: 8px;
+      border: 2px solid var(--pref-accent-color);
+    }
+  }
+>>>>>>> upstream/main
 }

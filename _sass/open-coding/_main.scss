@@ -1,4 +1,8 @@
 @import 'root-color-map.scss';
+<<<<<<< HEAD
+=======
+@import "mixins/variables";
+>>>>>>> upstream/main
 @import "base/typography";
 @import "bathroom";
 @import "blogs";
@@ -7,14 +11,28 @@
 @import "forms/code-runner";
 @import "forms/ui-runner";
 @import "forms/game-runner";
+<<<<<<< HEAD
+=======
+@import "forms/pause-modal";
+@import "forms/leaderboard";
+@import "forms/game-engine";
+@import "forms/game-builder";
+@import "forms/game-dialogue-system";
+>>>>>>> upstream/main
 @import "hacks";
 @import "hacks_lxd";
 @import "hallpass";
 @import "microblog";
+<<<<<<< HEAD
 @import "navbar";
 @import "platformer-game";
 @import "game-engine";
 @import "game-builder";
+=======
+@import "grading";
+@import "navbar";
+@import "platformer-game";
+>>>>>>> upstream/main
 @import "quiz";
 @import "rps_lesson";
 @import "search";
@@ -25,6 +43,12 @@
 @import "natm-2025-tri1.scss";
 @import "timeline";
 @import "lesson-player";
+<<<<<<< HEAD
+=======
+@import "documentation";
+@import "api-documentation";
+
+>>>>>>> upstream/main
 
 html,
 body,
