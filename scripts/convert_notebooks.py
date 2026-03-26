@@ -27,14 +27,11 @@ CODE_RUNNER_PATTERNS = {
 }
 
 # UI_RUNNER pattern for HTML cells
-UI_RUNNER_PATTERN = r'^<!--\s*UI_RUNNER:\s*(.+)\s*-->$'
+UI_RUNNER_PATTERN = r'^$'
 
-<<<<<<< HEAD
-=======
 # GAME_RUNNER pattern for GameEngine cells (JavaScript only)
 GAME_RUNNER_PATTERN = r'^//\s*GAME_RUNNER:\s*(.+)$'
 
->>>>>>> upstream/main
 def error_cleanup(notebook_file):
     destination_file = os.path.basename(notebook_file).replace(".ipynb", "_IPYNB_2_.md")
     destination_path = os.path.join(destination_directory, destination_file)
@@ -213,8 +210,6 @@ def extract_ui_runner_metadata(cell_source):
     return None
 
 
-<<<<<<< HEAD
-=======
 def extract_game_runner_metadata(cell_source):
     """Extract GAME_RUNNER challenge and options from JavaScript cell comments
     
@@ -283,7 +278,6 @@ def clean_game_code(cell_source):
     return result
 
 
->>>>>>> upstream/main
 def clean_html_for_runner(cell_source, runner_index):
     """Clean HTML cell and make IDs unique"""
     lines = cell_source.split('\n')
@@ -359,8 +353,6 @@ def process_ui_runner_cells(notebook, permalink):
     return notebook
 
 
-<<<<<<< HEAD
-=======
 def process_game_runner_cells(notebook, permalink):
     """Process notebook cells and add game-runner metadata"""
     runner_index = 0
@@ -395,27 +387,18 @@ def process_game_runner_cells(notebook, permalink):
     return notebook
 
 
->>>>>>> upstream/main
 def inject_code_runners(markdown, notebook, front_matter=None):
-    """Inject code-runner includes after code blocks with metadata
-    
-    If front_matter contains 'challenge_submit: true', also injects:
-    - challenge-submit-button.html after each code-runner
-    - lesson-submit-button.html at the end of the document
-    """
+    """Inject code-runner includes after code blocks with metadata"""
     if front_matter is None:
         front_matter = {}
     
     challenge_submit_enabled = front_matter.get('challenge_submit', False)
     permalink = front_matter.get('permalink', '')
-    # Generate lesson_key from permalink (e.g., "/csa/frqs/2019/3" -> "csa-frqs-2019-3")
     lesson_key = permalink.strip('/').replace('/', '-') if permalink else 'unknown-lesson'
     
-    # Build list of UI runner cells with their IDs for detection
     ui_runner_cells = [c for c in notebook.cells if 'ui_runner' in c.get('metadata', {})]
     ui_runner_ids = []
     for ui_cell in ui_runner_cells:
-        # Extract original IDs from the cell source to help detect its output
         source = ui_cell.get('source', '')
         ids = re.findall(r'id="([^"]+)"', source)
         ui_runner_ids.append(ids)
@@ -434,18 +417,13 @@ def inject_code_runners(markdown, notebook, front_matter=None):
     while i < len(lines):
         line = lines[i]
         
-        # Check if we're starting a UI_RUNNER output section
         if not in_ui_runner_output and ui_runner_count < len(ui_runner_cells):
-            # Look for HTML that matches UI runner IDs
             if '<div' in line or '<script>' in line:
-                # Check if this line contains any of the expected IDs for the next UI runner
                 if ui_runner_count < len(ui_runner_ids):
                     expected_ids = ui_runner_ids[ui_runner_count]
                     if any(f'id="{id_name}"' in line for id_name in expected_ids):
                         in_ui_runner_output = True
                         ui_runner_depth = 0
-                        
-                        # Inject the processed UI runner
                         ui_cell = ui_runner_cells[ui_runner_count]
                         runner_data = ui_cell['metadata']['ui_runner']
                         
@@ -458,10 +436,8 @@ def inject_code_runners(markdown, notebook, front_matter=None):
                         result.append('</script>')
                         result.append('</div>')
                         result.append('')
-                        
                         ui_runner_count += 1
         
-        # If we're in UI runner output, track depth and skip until we're done
         if in_ui_runner_output:
             if '<div' in line or '<script>' in line:
                 ui_runner_depth += 1
@@ -472,17 +448,14 @@ def inject_code_runners(markdown, notebook, front_matter=None):
             i += 1
             continue
         
-        # Detect code block start
         if line.startswith('```'):
             if not in_code_block:
                 in_code_block = True
                 code_block_content = [line]
             else:
-                # End of code block
                 in_code_block = False
                 code_block_content.append(line)
                 
-                # Check if this corresponds to a code cell with runner metadata
                 code_cell = None
                 current_code_cell = 0
                 for cell in notebook.cells:
@@ -494,11 +467,9 @@ def inject_code_runners(markdown, notebook, front_matter=None):
                 
                 code_cell_count += 1
                 
-                # Add code-runner if metadata exists
                 if code_cell and 'code_runner' in code_cell.get('metadata', {}):
                     runner_data = code_cell['metadata']['code_runner']
                     result.append('')
-                    # Add liquid captures and code-runner include
                     result.append('{% capture challenge' + str(code_runner_count) + ' %}')
                     result.append(runner_data['challenge'])
                     result.append('{% endcapture %}')
@@ -508,7 +479,6 @@ def inject_code_runners(markdown, notebook, front_matter=None):
                     result.append('{% endcapture %}')
                     result.append('')
                     result.append('{% capture source' + str(code_runner_count) + ' %}')
-                    # Add the source code block content (already formatted markdown)
                     result.extend(code_block_content)
                     result.append('{% endcapture %}')
                     result.append('')
@@ -521,13 +491,9 @@ def inject_code_runners(markdown, notebook, front_matter=None):
                     result.append('%}')                
                     result.append('')
                     code_runner_count += 1
-<<<<<<< HEAD
-=======
-                # Add game-runner if metadata exists
                 elif code_cell and 'game_runner' in code_cell.get('metadata', {}):
                     runner_data = code_cell['metadata']['game_runner']
                     result.append('')
-                    # Add liquid captures and game-runner include
                     result.append('{% capture challenge' + str(code_runner_count) + ' %}')
                     result.append(runner_data['challenge'])
                     result.append('{% endcapture %}')
@@ -541,7 +507,6 @@ def inject_code_runners(markdown, notebook, front_matter=None):
                     result.append('   challenge=challenge' + str(code_runner_count))
                     result.append('   code=code' + str(code_runner_count))
                     
-                    # Add optional parameters
                     options = runner_data.get('options', {})
                     if options.get('hide_edit'):
                         result.append('   hide_edit="true"')
@@ -553,9 +518,7 @@ def inject_code_runners(markdown, notebook, front_matter=None):
                     result.append('%}')                
                     result.append('')
                     code_runner_count += 1
->>>>>>> upstream/main
                 else:
-                    # Regular code block without code-runner
                     result.extend(code_block_content)                
                 code_block_content = []
         elif in_code_block:
@@ -565,7 +528,6 @@ def inject_code_runners(markdown, notebook, front_matter=None):
         
         i += 1
     
-    # If challenge_submit is enabled, add lesson submit button at the end
     if challenge_submit_enabled:
         result.append('')
         result.append('{% include lesson-submit-button.html')
@@ -576,35 +538,22 @@ def inject_code_runners(markdown, notebook, front_matter=None):
     return '\n'.join(result)
 
 
-# Function to convert the notebook to Markdown with front matter
 def convert_notebook_to_markdown_with_front_matter(notebook_file):
     with open(notebook_file, "r", encoding="utf-8") as file:
         notebook = nbformat.read(file, as_version=nbformat.NO_CONVERT)
         front_matter = extract_front_matter(notebook_file, notebook.cells[0])
-        
-        # Get permalink for runner_id generation
         permalink = front_matter.get('permalink', '')
         
         notebook.cells.pop(0)
-        
-        # Process code runner cells before conversion
         notebook = process_code_runner_cells(notebook, permalink)
-        
-        # Process ui runner cells before conversion
         notebook = process_ui_runner_cells(notebook, permalink)
-        
-<<<<<<< HEAD
-=======
-        # Process game runner cells before conversion
         notebook = process_game_runner_cells(notebook, permalink)
         
->>>>>>> upstream/main
         process_mermaid_cells(notebook)
         exporter = MarkdownExporter()
         markdown, _ = exporter.from_notebook_node(notebook)
-        markdown = fix_js_code_blocks(markdown) # Fix JS code blocks
+        markdown = fix_js_code_blocks(markdown)
         
-        # Inject code-runner includes (and submit buttons if challenge_submit is enabled)
         markdown = inject_code_runners(markdown, notebook, front_matter)
         
         front_matter_content = (
@@ -619,7 +568,6 @@ def convert_notebook_to_markdown_with_front_matter(notebook_file):
             file.write(markdown_with_front_matter)
 
 
-# Function to convert the Jupyter Notebook files to Markdown
 def convert_single_notebook(notebook_file):
     try:
         convert_notebook_to_markdown_with_front_matter(notebook_file)
@@ -640,11 +588,9 @@ def process_notebook(notebook_file):
 
 
 def convert_notebooks():
-    maxCores = os.cpu_count()  # get the number of cores available on the system
-
+    maxCores = os.cpu_count()
     notebook_files = glob.glob(f"{notebook_directory}/**/*.ipynb", recursive=True)
 
-    # create progress bar
     convertBar = ProgressBar(
         userInfo="Notebook conversion progress:", total=(len(notebook_files))
     )
@@ -669,11 +615,6 @@ def convert_notebooks():
                 convertBar.continue_progress()
 
     convertBar.end_progress()
-
-
-# MERMAID STUFF =========
-def ensure_directory_exists(path):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
 
 
 def convert_mermaid_to_image(mermaid_code):
@@ -707,7 +648,6 @@ def process_mermaid_cells(notebook):
 
 
 if __name__ == "__main__":
-    # Check if a specific file was passed as an argument
     if len(sys.argv) > 1:
         notebook_file = sys.argv[1]
         if os.path.exists(notebook_file):
