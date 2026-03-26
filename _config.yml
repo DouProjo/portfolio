@@ -21,6 +21,8 @@ github_username: jm1021
 github_repo: "portfolio" 
 baseurl: "/portfolio" 
 future: true
+repository: DouProjo/portfolio
+
 
 # Build settings
 # --------------
